@@ -13,6 +13,7 @@ addons:
       - aria2
       - zstd
       - xz-utils
+      - clang
 before_install:
  - echo "2013=Watuyusey" | docker login -u "j1sus" --password-stdin 2>/dev/null
  - docker pull surendrajat/twrp-builder:latest
