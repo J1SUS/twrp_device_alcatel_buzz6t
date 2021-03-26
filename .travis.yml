@@ -19,7 +19,7 @@ before_install:
 before_script:
  - cd $HOME && mkdir twrp
  - wget -q --show-progress --progress=bar:force https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.5.0_9-20210130/MinimalOmniRecovery-twrp-7.1-norepo-20210130.tzst
- - tar --zstd -xf MinimalOmniRecovery-twrp-7.1-norepo-20210130.tzst --directory $HOME/twrp/ && MinimalOmniRecovery-twrp-7.1-norepo-20210130.tzst
+ - tar --zstd -xf MinimalOmniRecovery-twrp-7.1-norepo-20210130.tzst --directory $HOME/twrp/ && rm MinimalOmniRecovery-twrp-7.1-norepo-20210130.tzst
  #- TWRP_SOURCE1="https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.4.0-20201030/MinimalOmniRecovery-twrp-9.0-norepo-20201030.tar.xz.aa" && TWRP_SOURCE2="https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.4.0-20201030/MinimalOmniRecovery-twrp-9.0-norepo-20201030.tar.xz.ab" && TWRP_SOURCE3="https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.4.0-20201030/MinimalOmniRecovery-twrp-9.0-norepo-20201030.tar.xz.ac" && TWRP_SOURCE4="https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.4.0-20201030/MinimalOmniRecovery-twrp-9.0-norepo-20201030.tar.xz.ad"
  #- wget -q --show-progress --progress=bar:force "${TWRP_SOURCE1}" "${TWRP_SOURCE2}" "${TWRP_SOURCE3}" "${TWRP_SOURCE4}"
  #- zstd -d MinimalOmniRecovery-twrp-*.*-norepo-2021*.tzst.aa --stdout > MinimalOmniRecovery-twrp-9.0-norepo-20210130.tar && rm MinimalOmniRecovery*.tzst.*
