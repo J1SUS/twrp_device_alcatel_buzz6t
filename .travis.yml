@@ -13,7 +13,6 @@ addons:
       - aria2
       - zstd
       - xz-utils
-      - clang
       - libncurses5:i386
       - libncurses5
       - ia32-libs
