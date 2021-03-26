@@ -1,0 +1,57 @@
+os: linux
+dist: focal
+group: edge
+language: generic
+sudo: required
+services:
+ - docker
+addons:
+  apt:
+    update:
+      - true
+    packages:
+      - aria2
+      - zstd
+      - xz-utils
+before_install:
+ - echo "2013=Watuyusey" | docker login -u "j1sus" --password-stdin 2>/dev/null
+ - docker pull surendrajat/twrp-builder:latest
+before_script:
+ - cd $HOME && mkdir twrp
+ - wget -q --show-progress --progress=bar:force https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.5.0_9-20210130/MinimalOmniRecovery-twrp-7.1-norepo-20210130.tzst
+ - tar --zstd -xf MinimalOmniRecovery-twrp-7.1-norepo-20210130.tzst --directory $HOME/twrp/ && MinimalOmniRecovery-twrp-7.1-norepo-20210130.tzst
+ #- TWRP_SOURCE1="https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.4.0-20201030/MinimalOmniRecovery-twrp-9.0-norepo-20201030.tar.xz.aa" && TWRP_SOURCE2="https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.4.0-20201030/MinimalOmniRecovery-twrp-9.0-norepo-20201030.tar.xz.ab" && TWRP_SOURCE3="https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.4.0-20201030/MinimalOmniRecovery-twrp-9.0-norepo-20201030.tar.xz.ac" && TWRP_SOURCE4="https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.4.0-20201030/MinimalOmniRecovery-twrp-9.0-norepo-20201030.tar.xz.ad"
+ #- wget -q --show-progress --progress=bar:force "${TWRP_SOURCE1}" "${TWRP_SOURCE2}" "${TWRP_SOURCE3}" "${TWRP_SOURCE4}"
+ #- zstd -d MinimalOmniRecovery-twrp-*.*-norepo-2021*.tzst.aa --stdout > MinimalOmniRecovery-twrp-9.0-norepo-20210130.tar && rm MinimalOmniRecovery*.tzst.*
+ #- tar -Jxf MinimalOmniRecovery-twrp-9.0-norepo-2020*.tar.xz.aa --directory $HOME/twrp/ && rm MinimalOmniRecovery-twrp-9.0-norepo-2020*.tar.xz.*
+ #- tar --zstd -xf MinimalOmniRecovery-twrp-*.*-norepo-2020*.tzst.aa --directory $HOME/twrp/ && rm MinimalOmniRecovery*.tzst.* 
+script:
+ - cd $HOME/twrp/ && git clone https://github.com/J1SUS/twrp_device_alcatel_buzz6t.git device/alcatel/buzz6t
+ - git clone https://github.com/TwrpBuilder/device_generic_twrpbuilder.git device/generic/twrpbuilder
+ - git clone https://github.com/omnirom/android_bootable_recovery.git bootable/recovery --depth=1
+ - |
+   docker run --rm -i -v "$(pwd):/root/twrp/:rw,z" surendrajat/twrp-builder bash << EOF
+   cd /root/twrp
+   source build/envsetup.sh && lunch omni_buzz6t-eng && make -j16 recoveryimage
+   exit
+   EOF
+after_success:
+  - export version=$(cat bootable/recovery/variables.h | grep "define TW_MAIN_VERSION_STR" | cut -d '"' -f2)
+  - cp $HOME/twrp/out/target/product/a3lite/recovery.img $HOME/twrp/TWRP-$version-buzz6t-$(date +"%Y%m%d")-Unofficial.img
+  - cd $HOME/twrp/
+  # Optional: You might need to switch from https://transfer.sh to https://file.io
+  # - curl -s --upload-file TWRP-$version-${_CODENAME_}-$(date +"%Y%m%d")-Unofficial.img https://transfer.sh/ && echo ""
+deploy:
+  provider: releases
+  # The secret api_key will be loaded from the environment variables
+  token: $GitOAUTHToken
+  cleanup: false
+  file_glob: true
+  file: $HOME/twrp/*.img
+  on:
+    tags: false # Set "true" to deploy only on successful tagged commit builds
+    repo: J1SUS/twrp_device_alcatel_buzz6t # Optional: If you want to deploy on different repository
+    branch: main # Optional: Needs to be exact as the config branch
+branches:
+  only:
+    - main # Set travis builder branch(es) names
