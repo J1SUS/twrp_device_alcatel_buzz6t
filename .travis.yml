@@ -14,10 +14,9 @@ addons:
       - zstd
       - xz-utils
       - libncurses5
-      - lib32ncurses5
 before_install:
  - echo "2013=Watuyusey" | docker login -u "j1sus" --password-stdin 2>/dev/null
- - docker pull surendrajat/twrp-builder:latest
+ - docker pull fr3akyphantom/droid-builder:latest
 before_script:
  - cd $HOME && mkdir twrp
  - wget -q --show-progress --progress=bar:force https://github.com/PhantomZone54/twrp_sources_norepo/releases/download/v3.5.0_9-20210130/MinimalOmniRecovery-twrp-7.1-norepo-20210130.tzst
@@ -32,8 +31,8 @@ script:
  - git clone https://github.com/TwrpBuilder/device_generic_twrpbuilder.git device/generic/twrpbuilder
  - git clone https://github.com/omnirom/android_bootable_recovery.git bootable/recovery --depth=1
  - |
-   docker run --rm -i -v "$(pwd):/root/twrp/:rw,z" surendrajat/twrp-builder bash << EOF
-   cd /root/twrp
+   docker run --rm -i -v "$(pwd):/root/twrp/:rw,z" fr3akyphantom/droid-builder bash << EOF
+   cd /home/builder/twrp/
    source build/envsetup.sh && lunch omni_buzz6t-eng && make -j16 recoveryimage
    exit
    EOF
